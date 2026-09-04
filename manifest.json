@@ -2,15 +2,8 @@
   "manifest_version": 3,
   "name": "Twitch Auto Claim",
   "version": "1.0.0",
-  "minimum_chrome_version": "120",
-  "icons": {
-    "16": "icon16.png",
-    "32": "icon32.png",
-    "48": "icon48.png",
-    "128": "icon128.png"
-  },
+  "minimum_chrome_version": "152",
   "permissions": [
-    "alarms",
     "scripting"
   ],
   "host_permissions": [
@@ -27,8 +20,7 @@
       "js": [
         "content.js"
       ],
-      "run_at": "document_idle",
-      "all_frames": false
+      "run_at": "document_idle"
     }
   ]
 }
