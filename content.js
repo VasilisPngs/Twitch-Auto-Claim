@@ -2,44 +2,21 @@
   "use strict";
 
   const ACTIVE_FLAG = "__twitchAutoClaimActive";
+  const POLL_INTERVAL = 5000;
 
   if (globalThis[ACTIVE_FLAG]) return;
 
   globalThis[ACTIVE_FLAG] = true;
 
-  const SELECTOR = '.claimable-bonus__icon, button[data-a-target="chat-claim-bonus-button"]';
-  const POLL_INTERVAL = 5000;
+  const findClaimButton = () =>
+    document.querySelector('button[data-a-target="chat-claim-bonus-button"]') ??
+    document.querySelector(".claimable-bonus__icon")?.closest("button");
 
   const claim = () => {
-    const button = document.querySelector(SELECTOR)?.closest("button");
+    const button = findClaimButton();
 
-    if (!button || button.disabled) return;
-
-    button.click();
+    if (button) button.click();
   };
 
-  const tick = () => {
-    try {
-      claim();
-    } catch {
-      return;
-    }
-  };
-
-  try {
-    chrome.runtime.sendMessage({ type: "twitch-open" })?.catch?.(() => {});
-  } catch {
-    return;
-  }
-
-  setInterval(tick, POLL_INTERVAL);
-
-  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-    if (message?.type !== "claim") return undefined;
-
-    tick();
-    sendResponse({ ok: true });
-
-    return false;
-  });
+  setInterval(claim, POLL_INTERVAL);
 })();
