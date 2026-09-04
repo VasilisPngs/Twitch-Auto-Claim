@@ -1,17 +1,8 @@
 "use strict";
 
-const ALARM_NAME = "claim-sweep";
-const PERIOD_MINUTES = 0.5;
-const TWITCH_TABS = { url: "https://www.twitch.tv/*" };
 const INJECTED_FILES = ["content.js"];
 
-const ensureAlarm = async () => {
-  if (await chrome.alarms.get(ALARM_NAME)) return;
-
-  await chrome.alarms.create(ALARM_NAME, { periodInMinutes: PERIOD_MINUTES });
-};
-
-const poke = async (tab) => {
+const injectIntoTab = async (tab) => {
   if (tab.id == null || tab.discarded) return;
 
   try {
@@ -28,36 +19,17 @@ const poke = async (tab) => {
   }
 };
 
-const sweep = async () => {
+const initializeOpenTabs = async () => {
   let tabs;
 
   try {
-    tabs = await chrome.tabs.query(TWITCH_TABS);
+    tabs = await chrome.tabs.query({ url: "https://www.twitch.tv/*" });
   } catch {
     return;
   }
 
-  if (!tabs.length) {
-    await chrome.alarms.clear(ALARM_NAME);
-    return;
-  }
-
-  await Promise.all(tabs.map(poke));
+  await Promise.all(tabs.map(injectIntoTab));
 };
 
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name !== ALARM_NAME) return;
-
-  sweep().catch(() => {});
-});
-
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message?.type !== "twitch-open") return undefined;
-
-  ensureAlarm();
-  sendResponse({ ok: true });
-
-  return false;
-});
-
-ensureAlarm();
+chrome.runtime.onInstalled.addListener(initializeOpenTabs);
+chrome.runtime.onStartup.addListener(initializeOpenTabs);
