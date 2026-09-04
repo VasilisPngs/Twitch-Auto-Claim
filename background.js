@@ -1,34 +1,27 @@
 "use strict";
 
-const INJECTED_FILES = ["content.js"];
-
-const injectIntoTab = async (tab) => {
-  if (tab.id == null || tab.discarded) return;
-
-  try {
-    await chrome.tabs.sendMessage(tab.id, { type: "claim" });
-  } catch {
-    try {
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: INJECTED_FILES
-      });
-    } catch {
-      return;
-    }
-  }
-};
+const CONTENT_SCRIPT = "content.js";
+const TWITCH_TABS = { url: "https://www.twitch.tv/*" };
 
 const initializeOpenTabs = async () => {
   let tabs;
 
   try {
-    tabs = await chrome.tabs.query({ url: "https://www.twitch.tv/*" });
+    tabs = await chrome.tabs.query(TWITCH_TABS);
   } catch {
     return;
   }
 
-  await Promise.all(tabs.map(injectIntoTab));
+  await Promise.all(
+    tabs
+      .filter((tab) => tab.id != null && !tab.discarded)
+      .map((tab) =>
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: [CONTENT_SCRIPT]
+        }).catch(() => {})
+      )
+  );
 };
 
 chrome.runtime.onInstalled.addListener(initializeOpenTabs);
