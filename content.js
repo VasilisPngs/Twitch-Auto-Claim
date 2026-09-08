@@ -4,25 +4,28 @@
   const CLAIM_SELECTOR = 'button[data-a-target="chat-claim-bonus-button"], button:has(.claimable-bonus__icon)';
   const POLL_INTERVAL = 5000;
 
-  const claim = () => {
-    const button = document.querySelector(CLAIM_SELECTOR);
+  const claim = (button) => {
+    const target = button ?? document.querySelector(CLAIM_SELECTOR);
 
-    if (button) button.click();
+    if (!target || target.dataset.claimed) return;
+
+    target.dataset.claimed = "true";
+    target.click();
   };
 
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
-        if (node.nodeType === 1) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
           if (node.matches(CLAIM_SELECTOR)) {
-            node.click();
+            claim(node);
             return;
           }
 
           const nestedButton = node.querySelector(CLAIM_SELECTOR);
 
           if (nestedButton) {
-            nestedButton.click();
+            claim(nestedButton);
             return;
           }
         }
@@ -32,5 +35,5 @@
 
   claim();
   observer.observe(document.body, { childList: true, subtree: true });
-  setInterval(claim, POLL_INTERVAL);
+  setInterval(() => claim(), POLL_INTERVAL);
 })();
