@@ -14,8 +14,14 @@ const sweep = async () => {
   }));
 };
 
-const createAlarm = () => chrome.alarms.create(ALARM_NAME, { periodInMinutes: PERIOD_IN_MINUTES });
+const ensureAlarm = async () => {
+  if (await chrome.alarms.get(ALARM_NAME)) return;
 
-chrome.runtime.onInstalled.addListener(createAlarm);
-chrome.runtime.onStartup.addListener(createAlarm);
+  await chrome.alarms.create(ALARM_NAME, { periodInMinutes: PERIOD_IN_MINUTES });
+};
+
+chrome.runtime.onInstalled.addListener(ensureAlarm);
+chrome.runtime.onStartup.addListener(ensureAlarm);
 chrome.alarms.onAlarm.addListener(sweep);
+
+ensureAlarm();
