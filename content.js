@@ -8,14 +8,15 @@
   const claim = (button) => {
     const target = button ?? document.querySelector(CLAIM_SELECTOR);
 
-    if (!target || target.disabled || target.dataset.claimed) return;
+    if (!target || target.disabled) return;
 
-    target.dataset.claimed = "true";
+    const now = performance.now();
+    const lastAttempt = Number(target.dataset.claimedAt);
+
+    if (lastAttempt && now - lastAttempt < RETRY_DELAY) return;
+
+    target.dataset.claimedAt = now;
     target.click();
-
-    setTimeout(() => {
-      if (target.isConnected) delete target.dataset.claimed;
-    }, RETRY_DELAY);
   };
 
   const observer = new MutationObserver((mutations) => {
@@ -36,6 +37,10 @@
         }
       }
     }
+  });
+
+  chrome.runtime.onMessage.addListener(() => {
+    claim();
   });
 
   claim();

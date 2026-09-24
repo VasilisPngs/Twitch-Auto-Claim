@@ -9,6 +9,16 @@
     "48": "icon48.png",
     "128": "icon128.png"
   },
+  "permissions": [
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://*.twitch.tv/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
   "content_scripts": [
     {
       "matches": [
