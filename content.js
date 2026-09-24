@@ -3,14 +3,19 @@
 
   const CLAIM_SELECTOR = 'button[data-a-target="chat-claim-bonus-button"], button:has(.claimable-bonus__icon)';
   const POLL_INTERVAL = 5000;
+  const RETRY_DELAY = 3000;
 
   const claim = (button) => {
     const target = button ?? document.querySelector(CLAIM_SELECTOR);
 
-    if (!target || target.dataset.claimed) return;
+    if (!target || target.disabled || target.dataset.claimed) return;
 
     target.dataset.claimed = "true";
     target.click();
+
+    setTimeout(() => {
+      if (target.isConnected) delete target.dataset.claimed;
+    }, RETRY_DELAY);
   };
 
   const observer = new MutationObserver((mutations) => {
