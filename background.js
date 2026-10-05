@@ -6,12 +6,7 @@ const SWEEP_MESSAGE = "claim";
 const sweep = async () => {
   const tabs = await chrome.tabs.query(TAB_QUERY);
 
-  await Promise.all(tabs.map(async (tab) => {
-    try {
-      await chrome.tabs.sendMessage(tab.id, SWEEP_MESSAGE);
-    } catch {
-    }
-  }));
+  await Promise.allSettled(tabs.map((tab) => chrome.tabs.sendMessage(tab.id, SWEEP_MESSAGE)));
 };
 
 const ensureAlarm = async () => {

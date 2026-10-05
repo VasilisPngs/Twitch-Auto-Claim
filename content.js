@@ -2,8 +2,8 @@
   "use strict";
 
   const CLAIM_SELECTOR = 'button[data-a-target="chat-claim-bonus-button"], button:has(.claimable-bonus__icon)';
-  const POLL_INTERVAL = 5000;
-  const RETRY_DELAY = 3000;
+  const POLL_INTERVAL_MS = 5000;
+  const RETRY_DELAY_MS = 3000;
 
   const claim = () => {
     const target = document.querySelector(CLAIM_SELECTOR);
@@ -13,7 +13,7 @@
     const now = performance.now();
     const lastAttempt = Number(target.dataset.claimedAt);
 
-    if (lastAttempt && now - lastAttempt < RETRY_DELAY) return;
+    if (lastAttempt && now - lastAttempt < RETRY_DELAY_MS) return;
 
     target.dataset.claimedAt = now;
     target.click();
@@ -24,5 +24,5 @@
   });
 
   claim();
-  setInterval(claim, POLL_INTERVAL);
+  setInterval(claim, POLL_INTERVAL_MS);
 })();
