@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const CLAIM_SELECTOR = 'button[data-a-target="chat-claim-bonus-button"], button:has(.claimable-bonus__icon)';
+  const CLAIM_SELECTOR = "button:has(.claimable-bonus__icon)";
   const POLL_INTERVAL_MS = 5000;
   const RETRY_DELAY_MS = 3000;
 
