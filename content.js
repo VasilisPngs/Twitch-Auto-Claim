@@ -1,12 +1,12 @@
 (() => {
   "use strict";
 
-  const CLAIM_SELECTOR = "button:has(.claimable-bonus__icon)";
+  const CLAIM_ICON_SELECTOR = "button .claimable-bonus__icon";
   const POLL_INTERVAL_MS = 5000;
   const RETRY_DELAY_MS = 3000;
 
   const claim = () => {
-    const target = document.querySelector(CLAIM_SELECTOR);
+    const target = document.querySelector(CLAIM_ICON_SELECTOR)?.closest("button");
 
     if (!target || target.disabled) return;
 
