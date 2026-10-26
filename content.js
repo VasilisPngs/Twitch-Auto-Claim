@@ -19,7 +19,7 @@
     target.click();
   };
 
-  chrome.runtime.onMessage.addListener(() => {
+  browser.runtime.onMessage.addListener(() => {
     claim();
   });
 

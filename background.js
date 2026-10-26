@@ -4,19 +4,19 @@ const TAB_QUERY = { url: ["https://*.twitch.tv/*"] };
 const SWEEP_MESSAGE = "claim";
 
 const sweep = async () => {
-  const tabs = await chrome.tabs.query(TAB_QUERY);
+  const tabs = await browser.tabs.query(TAB_QUERY);
 
-  await Promise.allSettled(tabs.map((tab) => chrome.tabs.sendMessage(tab.id, SWEEP_MESSAGE)));
+  await Promise.allSettled(tabs.map((tab) => browser.tabs.sendMessage(tab.id, SWEEP_MESSAGE)));
 };
 
 const ensureAlarm = async () => {
-  if (await chrome.alarms.get(ALARM_NAME)) return;
+  if (await browser.alarms.get(ALARM_NAME)) return;
 
-  await chrome.alarms.create(ALARM_NAME, { periodInMinutes: PERIOD_IN_MINUTES });
+  await browser.alarms.create(ALARM_NAME, { periodInMinutes: PERIOD_IN_MINUTES });
 };
 
-chrome.runtime.onInstalled.addListener(ensureAlarm);
-chrome.runtime.onStartup.addListener(ensureAlarm);
-chrome.alarms.onAlarm.addListener(sweep);
+browser.runtime.onInstalled.addListener(ensureAlarm);
+browser.runtime.onStartup.addListener(ensureAlarm);
+browser.alarms.onAlarm.addListener(sweep);
 
 ensureAlarm();
