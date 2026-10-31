@@ -19,10 +19,6 @@
     target.click();
   };
 
-  browser.runtime.onMessage.addListener(() => {
-    claim();
-  });
-
   claim();
   setInterval(claim, POLL_INTERVAL_MS);
 })();
